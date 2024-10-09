@@ -1,0 +1,217 @@
+{% extends 'student_template.html' %} {% block content %}
+<!-- Chart.js -->
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/chart.js/dist/Chart.min.css"
+/>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+  }
+
+  .content {
+    padding: 20px;
+  }
+  .card {
+    margin-bottom: 20px;
+  }
+  .widget {
+    border-radius: 0.5rem;
+    padding: 20px;
+    text-align: center;
+    transition: background 0.3s;
+    color: black;
+  }
+
+  .row {
+    margin-bottom: 1em;
+  }
+  /* Assign unique colors to each widget */
+  .widget-modules {
+    background: rgba(0, 123, 255, 0.476);
+  }
+  .widget-modules:hover {
+    background: rgba(0, 123, 255, 0.9);
+  }
+
+  .widget-documents {
+    background: rgba(40, 167, 70, 0.452);
+  }
+  .widget-documents:hover {
+    background: rgba(40, 167, 69, 0.9);
+  }
+
+  .widget-reviewed {
+    background: rgba(255, 193, 7, 0.415);
+  }
+  .widget-reviewed:hover {
+    background: rgba(255, 193, 7, 0.9);
+  }
+
+  .widget-messages {
+    background: rgba(255, 7, 7, 0.365);
+  }
+  .widget-messages:hover {
+    background: rgba(255, 7, 7, 0.9);
+  }
+
+  .widget h5 {
+    margin: 0;
+  }
+
+  .widget .fa {
+    font-size: 2rem;
+  }
+  h2 {
+    color: var(--primary-color);
+  }
+</style>
+
+<div class="d-flex">
+  <!-- Main Content -->
+  <div class="content flex-grow-1 p-4">
+    <h2>Dashboard Overview</h2>
+
+    <div class="row">
+      <div class="col-md-3">
+        <div class="widget widget-modules">
+          <i class="fas fa-folder-open"></i>
+          <h5>Total Modules</h5>
+          <p>{{modules}}</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="widget widget-documents">
+          <i class="fas fa-file-alt"></i>
+          <h5>Total Documents</h5>
+          <p>{{documents}}</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="widget widget-reviewed">
+          <i class="fas fa-check"></i>
+          <h5>Reviewed</h5>
+          <p>{{reviewed}}</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="widget widget-messages">
+          <i class="fas fa-envelope"></i>
+          <h5>Messages</h5>
+          <p>{{messages}}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart Row -->
+    <div class="row">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">Upload growth</h5>
+          </div>
+          <div class="card-body">
+            <canvas id="userGrowthChart"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">Top uploads this week</h5>
+          </div>
+          <div class="card-body">
+            <canvas id="revenueChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activities Row -->
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">Recent Activities</h5>
+          </div>
+          <div class="card-body">
+            <ul class="list-group">
+              {% if activities %} {% for activity in activities%}
+              <li>
+                <b>{{forloop.counter}}</b> {{activity}}
+                <b>{{activity.datetime}}</b>
+              </li>
+              {%endfor%} {%else%}
+              <li>
+                <span>No Activities found</span>
+              </li>
+              {%endif%}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js/dist/Chart.min.js"></script>
+<script>
+
+  const ctxUserGrowth = document.getElementById('userGrowthChart').getContext('2d');
+  const userGrowthChart = new Chart(ctxUserGrowth, {
+      type: 'line',
+      data: {
+          labels: {{ upload_days|safe }},
+          datasets: [{
+              label: 'Document Uploads',
+              data: {{ upload_counts|safe }},
+              borderColor: 'rgba(75, 192, 192, 1)',
+              backgroundColor: 'rgba(75, 192, 192, 0.2)',
+              fill: true,
+          }]
+      },
+      options: {
+          responsive: true,
+          scales: {
+              y: {
+                  beginAtZero: true
+              }
+          }
+      }
+  });
+
+  const ctxRevenue = document.getElementById('revenueChart').getContext('2d');
+  const revenueChart = new Chart(ctxRevenue, {
+      type: 'bar',
+      data: {
+          labels: [
+              {% for module in top_uploads %}
+                  "{{ module.title }}",
+              {% endfor %}
+          ],
+          datasets: [{
+              label: 'Number of Documents',
+              data: [
+                  {% for module in top_uploads %}
+                      {{ module.document_count }},
+                  {% endfor %}
+              ],
+              backgroundColor: 'rgba(54, 162, 235, 0.2)',
+              borderColor: 'rgba(54, 162, 235, 1)',
+              borderWidth: 1
+          }]
+      },
+      options: {
+          responsive: true,
+          scales: {
+              y: {
+                  beginAtZero: true
+              }
+          }
+      }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,139 @@
+{%extends 'teacher_template.html'%} {%block content%}
+<style>
+    .clickable-row {
+        cursor: pointer;
+    }
+
+    .truncated-text {
+        max-width: 150px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: inline-block;
+        vertical-align: middle;
+    }
+    .table td{
+        background-color: var(--background-secondary);
+    color: var(--primary-color);
+    }
+</style>
+</head>
+<body>
+
+<div class="container mt-0">
+<h2 class="mb-4">Documents for Module: {{ module.title }}</h2>
+
+<!-- Search Input -->
+<input type="text" id="search-input" class="form-control mb-4" placeholder="Search documents...">
+
+<table class="table table-bordered" id="documents-table">
+    <thead>
+        <tr>
+            <th>#</th>
+            
+            <th>Document</th>
+            <th>Uploaded At</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody id="documents-body">
+        {% if page_obj %}
+            {% for document in page_obj %}
+                <tr class="clickable-row" onclick="window.location='{{ document.file.url }}';">
+                    <td>{{ forloop.counter }}</td>
+                     
+                    <td>
+                        <span class="truncated-text" data-full-text="{{ document.file.name }}">
+                            {{ document.file.name }}
+                        </span>
+                    </td>
+                    <td>{{ document.uploaded_at|date:"Y-m-d H:i" }}</td>
+                    <td>{{ document.status }}</td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="5" class="text-center">No documents found</td>
+            </tr>
+        {% endif %}
+    </tbody>
+</table>
+
+<!-- Pagination Controls -->
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center" id="pagination-controls">
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1" aria-label="First">
+                    <span aria-hidden="true">&laquo;&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+        {% endif %}
+
+        <li class="page-item disabled">
+            <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        </li>
+
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+                    <span aria-hidden="true">&raquo;&raquo;</span>
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+</div>
+
+<!-- Include Bootstrap JS and jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    $('#search-input').on('keydown', function() {
+        const query = $(this).val();
+        $.ajax({
+            url: '{% url "module_documents" module.id %}',
+            data: {
+                search: query
+            },
+            success: function(data) {
+                $('#documents-body').empty();
+
+                if (data.documents.length > 0) {
+                    data.documents.forEach(function(doc, index) {
+                        const row = `
+                            <tr class="clickable-row" onclick="window.location='${doc.file_name}';">
+                                <td>${index + 1}</td>
+                                <td>
+                                    <span class="truncated-text" data-full-text="${doc.file_name}">
+                                        ${doc.file_name}
+                                    </span>
+                                </td>
+                                <td>${doc.uploaded_at}</td>
+                                <td>${doc.status}</td>
+                            </tr>
+                        `;
+                        $('#documents-body').append(row);
+                    });
+                } else {
+                    $('#documents-body').append('<tr><td colspan="5" class="text-center">No documents found</td></tr>');
+                }
+            }
+        });
+    });
+});
+</script>
+
+{%endblock%}

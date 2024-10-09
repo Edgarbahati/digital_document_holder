@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    />
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+    />
+    <title>Login</title>
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: rgba(60, 56, 56, 0.393);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        padding: 20px;
+        color: #333;
+      }
+      .login-container {
+        background: #ffffff;
+        padding: 30px;
+        border-radius: 0px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+        width: 100%;
+        text-align: center;
+      }
+      .login-container h2 {
+        font-size: 15px;
+        margin-bottom: 20px;
+        color: #00000186;
+      }
+      .form-group {
+        margin-bottom: 15px;
+        text-align: left;
+      }
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 14px;
+        color: #555;
+      }
+
+      .input-group input,
+      .input-group-text {
+        border-radius: 0px;
+        font-size: 0.8rem;
+      }
+      .form-group input[type="submit"] {
+        background: #12529bb4;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        font-size: 16px;
+        border-radius: 0px;
+      }
+
+      .error {
+        color: red;
+        margin-top: 10px;
+      }
+      .links {
+        margin-top: 20px;
+        font-size: 14px;
+      }
+      .links a {
+        color: #007bff9e;
+        text-decoration: none;
+        margin: 0 5px;
+        transition: color 0.3s ease;
+      }
+      .links a:hover {
+        color: #0056b3;
+      }
+      .login-form-outline-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 50%;
+      }
+      .login-form-outline-container .h1 {
+        text-align: center;
+        margin-bottom: 2rem;
+        font-weight: 700;
+      }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  </head>
+  <body>
+    <div class="login-form-outline-container">
+      <h1 class="h1">DIGITAL DOCUMENT</h1>
+      <div class="login-container">
+        <h2>Login to view your digital document</h2>
+
+        <form method="POST">
+          {% csrf_token %} {%if messages%} {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+          {% endfor %} {%endif%}
+          <div class="input-group mb-3" id="identifierGroup">
+            <input
+              type="text"
+              id="identifier"
+              name="identifier"
+              required
+              placeholder="Email or reg number"
+              class="form-control"
+            />
+            <span class="input-group-text"
+              ><i class="fas fa-envelope"></i
+            ></span>
+          </div>
+
+          <div class="input-group mb-3">
+            <input
+              type="password"
+              id="password"
+              name="password"
+              required
+              placeholder="Password"
+              class="form-control"
+            />
+            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+          </div>
+
+          <div class="form-group">
+            <input type="submit" value="Login" class="form-control" />
+          </div>
+
+          <div class="links">
+            <a href="{%url 'register'%}">Register</a>
+            <a href="{%url 'forget_password'%}">Forgot Password?</a>
+          </div>
+        </form>
+      </div>
+    </div>
+    <script>
+      $(document).ready(function () {
+        $("#role").change(function () {
+          var role = $(this).val();
+          var identifierLabel = $('label[for="identifier"]');
+          var identifierInput = $("#identifier");
+
+          if (role === "student") {
+            identifierLabel.text("Registration Number");
+            identifierInput.attr(
+              "placeholder",
+              "Enter your registration number"
+            );
+          } else if (role === "teacher" || role === "hod") {
+            identifierLabel.text("Email");
+            identifierInput.attr("placeholder", "Enter your email");
+          } else {
+            identifierLabel.text("Email or Registration Number");
+            identifierInput.attr(
+              "placeholder",
+              "Enter email or registration number"
+            );
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

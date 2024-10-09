@@ -1,0 +1,62 @@
+{% extends "teacher_template.html" %} {% block content %}
+<style>
+  .dash-col {
+    background-color: var(--background-secondary);
+    padding: 1em;
+    margin: 0.5em;
+    border: 1px solid var(--interactive-color-hover);
+    border-top: 2px solid var(--interactive-color);
+  }
+  .dash-col-divider {
+    height: 0.5px;
+    background-color: var(--primary-color);
+    width: 100%;
+  }
+  .dash-col-header {
+    padding: 0.5em;
+    margin: 2px;
+  }
+  .dash-info p {
+    margin-bottom: 1px;
+    font-size: 1em;
+    font-weight: 100;
+  }
+  .dash-info p b {
+    font-weight: 600;
+  }
+</style>
+<h4>Teacher Dashboard</h4>
+<div class="dash-row">
+  <div class="dash-col">
+    <div class="dash-col-header">
+      <span>Teacher's Information</span>
+    </div>
+    <div class="dash-col-divider"></div>
+    <div class="dash-info">
+      <p><b>Name:</b> {{ user.first_name }} {{ user.last_name }}</p>
+      <p><b>Email:</b> {{ user.email }}</p>
+      <p><b>Status: </b>{{ user.is_active }}</p>
+      <p><b>Department: </b> {{ user.department }}</p>
+    </div>
+  </div>
+  <div class="dash-col">
+    <div class="dash-col-header">
+      <span>Department Overview</span>
+    </div>
+    <div class="dash-col-divider"></div>
+    <div class="dash-info">
+      <p><b>Name:</b> {{user.department}}</p>
+      <p><b>Students:</b> {{ students }}</p>
+      <p><b>Teachers: </b>{{ teachers }}</p>
+      <p><b>Documents: </b>{{ documents }}</p>
+      <p><b>Modules: </b> {{ modules }}</p>
+      <p>
+        <b>Programs: </b>
+        {%for program in programs%}
+        <span>{{program}}, </span>
+        {%endfor%}
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

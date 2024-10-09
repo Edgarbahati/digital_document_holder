@@ -1,0 +1,63 @@
+{%extends 'student_template.html'%} {%block content%}
+<style>
+  .modules-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: start;
+  }
+  .modules-list .module-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: var(--primary-color);
+  }
+
+  .modules-list .module-item a {
+    display: inline-block;
+    width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+  }
+
+  .modules-list .module-item a:hover::after {
+    content: attr(data-full-text);
+    position: absolute;
+    background-color: var(--interactive-color);
+    color: var(--interactive-color-hover);
+    padding: 5px 10px;
+    border-radius: 4px;
+    white-space: normal;
+    word-wrap: break-word;
+    z-index: 10;
+    max-width: 300px; /* Adjust to your preference */
+    left: 0;
+    top: 100%;
+    margin-top: 5px;
+  }
+  .modules-list .module-item a:hover::after {
+    display: block;
+  }
+  h1 {
+    color: var(--primary-color);
+  }
+</style>
+
+<div class="modules-wraper">
+  <h1>My Modules</h1>
+  <ul class="modules-list">
+    {%for module in modules%}
+    <li class="module-item">
+      <div><i class="fa-regular fa-folder-open"></i></div>
+      <a
+        href="{%url 'student_module' module_id=module.id%}"
+        data-full-text="{{module}}"
+        >{{module}}
+      </a>
+    </li>
+    {%endfor%}
+  </ul>
+</div>
+{%endblock%}

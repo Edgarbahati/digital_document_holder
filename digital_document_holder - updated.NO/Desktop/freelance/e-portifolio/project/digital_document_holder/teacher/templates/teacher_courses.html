@@ -1,0 +1,153 @@
+{% extends "teacher_template.html" %} {% block content %}
+<style>
+  .table td {
+    background-color: var(--background-secondary);
+    color: var(--primary-color);
+  }
+
+  .table button {
+    border: none;
+  }
+
+  #new-course-btn {
+    border: none;
+    width: 50px;
+    height: 50px;
+    margin: 0.6em;
+    color: var(--interactive-color);
+    font-weight: 650;
+    background-color: var(--interactive-color-hover);
+  }
+
+  .modal-content {
+    background-color: var(--modal-background-secondary);
+    color: var(--primary-color);
+    z-index:1200;
+  }
+
+  .modal-backdrop {
+    background-color: var(--background-secondary);
+  }
+  #create-module-modal form button[type="submit"] {
+    background-color: var(--interactive-color);
+    color: var(--primary-color);
+  }
+  #create-module-modal button.close {
+    color: var(--error-color);
+  }
+  #create-module-modal form .form-control {
+    border-radius: 0px;
+  }
+</style>
+<script>
+  $(document).ready(function () {
+    $("#new-course-btn").click(function (event) {
+      $("#create-module-modal").css("display", "block");
+    });
+    $("#create-module-modal-close-btn").click(function () {
+      $("#create-module-modal").css("display", "none");
+    });
+  });
+</script>
+
+<!-- Modal HTML -->
+<div class="modal" id="create-module-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="create-module-modal-title">
+          Upload new doc
+        </h5>
+        <button
+          type="button"
+          class="close"
+          id="create-module-modal-close-btn"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        {%if messages%} {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %} {%endif%} {% csrf_token%}
+        <form action="{%url 'teacher_upload'%}" method="POST" enctype="multipart/form-data">
+          {%csrf_token%}
+          <div class="form-group">
+            <label for="module-teachers">Module</label>
+            <select
+              name="module_id"
+              id="teacher_modules"
+              class="form-control"
+              required
+            >
+              {%for module in modules%}
+              <option value="{{module.id}}">
+                {{module.title}}
+              </option>
+              {%endfor%}
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="module-teachers">File</label>
+             <input type="file" accept=".pdf" name="file">
+          </div>
+          <button type="submit" class="btn">Upload</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h3>My Documents</h3>
+<div class="courses-container">
+  <section class="hod-course-header">
+    <button
+      id="new-course-btn"
+      data-toggle="modal"
+      data-target="#create-module-modal"
+    >
+      <i class="fas fa-plus"></i>
+    </button>
+  </section>
+
+  <section class="courses-container">
+    <table class="table table-striped table-bordered" id="documents-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>File</th>
+          <th>uploaded at</th>
+          <th>module</th>
+          <th>year</th>
+        </tr>
+      </thead>
+      <tbody id="courses-body">
+        {% if documents %} {% for document in documents %}
+        <tr class="clickable-row">
+          <td>{{ forloop.counter }}</td>
+          <td>
+            <span
+              class="truncated-text"
+              data-full-text="{{ document.file.name }}"
+            >
+              {{ document.file }}
+            </span>
+          </td>
+          <td>{{ document.uploaded_at|date:"Y-m-d H:i" }}</td>
+          <td>{{ document.module.title }}</td>
+          <td>{{ document.module.year }}</td>
+           
+        </tr>
+        {% endfor %} {% else %}
+        <tr>
+          <td colspan="7" class="text-center">No Documents found</td>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </section>
+</div>
+
+{% endblock %}

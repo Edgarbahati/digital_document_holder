@@ -1,0 +1,60 @@
+{%extends 'hod_template.html'%} {%block content%}
+<style>
+  .modules-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: start;
+  }
+  .modules-list .module-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: var(--primary-color);
+  }
+
+  .modules-list .module-item a {
+    display: inline-block;
+    width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    color: var(--primary-color);
+  }
+
+  .modules-list .module-item a:hover::after {
+    content: attr(data-full-text);
+    position: absolute;
+    background-color: var(--background-secondary);
+    color: var(--secondary-color);
+    padding: 5px 10px;
+    border-radius: 4px;
+    white-space: normal;
+    word-wrap: break-word;
+    z-index: 10;
+    max-width: 300px; /* Adjust to your preference */
+    left: 0;
+    top: 100%;
+    margin-top: 5px;
+  }
+  .modules-list .module-item a:hover::after {
+    display: block;
+  }
+</style>
+<h1>Modules</h1>
+<div class="modules-wraper">
+  <ul class="modules-list">
+    {%for module in modules%}
+    <li class="module-item">
+      <div><i class="fa-regular fa-folder-open"></i></div>
+      <a
+        href="{%url 'hod_module_students' module_id=module.id%}"
+        data-full-text="{{module}}"
+        >{{module}}
+      </a>
+    </li>
+    {%endfor%}
+  </ul>
+</div>
+{%endblock%}

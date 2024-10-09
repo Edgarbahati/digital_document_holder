@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register</title>
+    <style>
+      /* General Styling */
+      body {
+        background-color:rgba(60, 56, 56, 0.393);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        padding: 20px;
+        color: #333;
+      }
+
+      .container {
+        background: #fff;
+        padding: 30px;
+        max-width: 500px;
+        width: 100%;
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+        border-radius: 0px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #333;
+        font-weight: 500;
+      }
+
+      form input,
+      form select {
+        width: 100%;
+        padding: 12px;
+        margin: 8px 0;
+        border: 1px solid #ccc;
+        border-radius: 0px;
+        font-size: 14px;
+        color: #333;
+      }
+
+      form input[type="submit"] {
+        background: #12529bb4;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        font-size: 16px;
+        border-radius: 0px;
+      }
+
+      form input[type="submit"]:hover {
+        background: #0056b3;
+      }
+
+      .error {
+        color: #e74c3c;
+        text-align: center;
+        font-size: 14px;
+        margin-top: 10px;
+      }
+
+      .login-link {
+        text-align: center;
+        margin-top: 20px;
+      }
+
+      .login-link a {
+        color: #007bff;
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      .login-link a:hover {
+        text-decoration: underline;
+      }
+      
+       
+
+      @media (max-width: 600px) {
+        .container {
+          padding: 20px;
+        }
+
+        h2 {
+          font-size: 22px;
+        }
+      }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        $("#role").change(function () {
+          var role = $(this).val();
+          role ?$("#department_field").show():$("#department_field").hide()
+          if (role !== "student" ){
+            $(".student-info").hide()
+          }
+        });
+        $("#department_id").change(function(){
+          if($("#role").val()=="student"){
+            let department_id= $(this).val();
+            $.ajax({
+              url:`programs/${department_id}`,
+              method:"GET",
+              contentType:"application/json",
+              success:(data)=>{
+                $(".student-info").css("display", "block")
+                let options="";
+                data.programs.map(program=>{
+                  options+=`<option value="${program.id}">${program.name}</option>`
+                })
+                $("#program_field").html(options)
+              }
+            })
+          } 
+
+        })
+
+      });
+
+      
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Register</h2>
+      <form method="POST" action="{%url 'register'%}">
+        {% csrf_token %}
+        <select name="role" id="role" required>
+          <option value="">Select Role</option>
+          <option value="student">Student</option>
+          <option value="hod">HOD</option>
+          <option value="teacher">Teacher</option>
+        </select>
+        <input type="text" name="firstname" placeholder="First Name" required />
+        <input type="text" name="lastname" placeholder="Last Name" required />
+        <input type="email" name="email" placeholder="Email" required />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          required
+        />
+       
+        <div id="department_field" style="display: none">
+          <select name="department_id" required id="department_id">
+            <option value="">Select Department</option>
+            {%for department in departments%}
+            <option value="{{department.id}}">{{department.name}}</option>
+            {%endfor%}
+          </select>
+        </div>
+        
+         
+        <div class="student-info" style="display: none;">
+          <select id="program_field" name="program"></select>
+            <select name="year" required>
+              <option value="1">Year 1</option>
+              <option value="2">Year 2</option>
+              <option value="3">Year 3</option>
+            </select>
+          
+          <div id="registration_number_field">
+            <input
+              type="text"
+              name="regnumber"
+              placeholder="Registration Number"
+            />
+          </div>
+      
+        </div>
+        <input type="submit" value="Register" />
+      </form>
+      <div class="messages">
+        {% if messages %}
+      <ul class="messages">
+          {% for message in messages %}
+          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+          {% endfor %}
+      </ul>
+      {% endif %}
+      </div>
+      <div class="login-link">
+        Already have an account? <a href="{%url 'login'%}">Login here</a>.
+      </div>
+    </div>
+  </body>
+
+</html>

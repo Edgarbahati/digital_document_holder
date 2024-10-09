@@ -1,0 +1,236 @@
+{% extends 'student_template.html'%} {% block content %}
+<style>
+  .multifile-selector-container {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 1em;
+  }
+  .multifile-selector-container .files-container {
+    height: max-content;
+    width: 50%;
+    border: 2px dashed var(--interactive-color);
+    display: flex;
+    padding: 1em;
+    gap: 3px;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+  .multifile-selector-container .drag-over {
+    background-color: var(--background-color);
+  }
+  .multifile-selector-container .files-container .image-viewer {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    justify-content: space-between;
+    margin: 0.3em;
+    border: 2px solid var(--interactive-color);
+    border-radius: 10px;
+    background-color: var(--background-secondary);
+    padding: 10px;
+    width: 100%;
+    overflow: hidden;
+  }
+  .multifile-selector-container .files-container .image-viewer button {
+    height: 32px;
+  }
+  .multifile-selector-container .files-container img {
+    width: 24%;
+    border-radius: 10px;
+  }
+  .multifile-selector-container .files-container .files-container-placeholder {
+    opacity: 0.5;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-content: center;
+  }
+  .multifile-selector-container .progress-bar {
+    width: 100%;
+    background-color: var(--interactive-color);
+    border-radius: 10px;
+  }
+  .multifile-selector-container .progress-bar-inner {
+    height: 10px;
+    background-color: rgba(27, 104, 8, 0.763);
+    border-radius: 10px;
+    width: 0%;
+  }
+  .multifile-selector-container button {
+    border: none;
+    border-radius: 5px;
+    margin: 5px;
+    padding: 5px;
+  }
+  .multifile-selector-container button.delete-btn {
+    background-color: rgba(126, 10, 10, 0.602);
+    color: var(--primary-color);
+  }
+  .multifile-selector-container button.upload-btn {
+    background-color: rgba(5, 52, 52, 0.487);
+    color: var(--primary-color);
+  }
+  .multifile-selector-container .files-container .widgets-viewer {
+    display: flex;
+    flex-direction: column;
+  }
+  .multifile-selector-container .files-container .buttons-viewer {
+    display: flex;
+  }
+  .multifile-selector-container .files-container .filename {
+    color: var(--primary-color);
+  }
+  .multifile-selector-container .select-btn {
+    padding: 5px;
+    background-color: var(--background-secondary);
+    color: var(--primary-color);
+  }
+  .multifile-selector-container .files-container .files-container-placeholder {
+    color: var(--primary-color);
+  }
+  .multifile-selector-container #module-selector {
+    width: 50%;
+    border: 1px solid var(--secondary-color);
+    padding: 0.6em;
+    border-radius: 5px;
+    background-color: var(--background-secondary);
+  }
+  .btn {
+    background-color: var(--interactive-color);
+  }
+</style>
+
+<div class="multifile-selector-container">
+  <div id="messages"></div>
+  <h1>Upload new document</h1>
+  <input type="hidden" id="upload-result" />
+  <select name="module" required id="module-selector">
+    <option value="">-- Select module --</option>
+    {%for module in modules%}
+    <option value="{{module.id}}">{{module}}</option>
+    {%endfor%}
+  </select>
+  <input
+    type="file"
+    hidden
+    id="hidden-fileselector"
+    multiple
+    onchange="handleRegularFileSelection(event)"
+  />
+  <button
+    class="btn select-btn"
+    onclick="document.getElementById('hidden-fileselector').click();"
+  >
+    <i class="fa-solid fa-upload"></i> upload files
+  </button>
+  <div class="files-container" id="files-container">
+    <span class="files-container-placeholder"> Drag Files here </span>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", (event) => {
+    const fileContainer = document.getElementById("files-container");
+    const moduleEl = document.getElementById("module-selector");
+    const messagesContainer = document.getElementById("messages");
+    fileContainer.addEventListener("drop", (event) => {
+      event.preventDefault();
+      event.target.classList.remove("drag-over");
+      handleFileSelection(event.dataTransfer.files);
+    });
+
+    fileContainer.addEventListener("dragover", (event) => {
+      event.preventDefault();
+      event.target.classList.add("drag-over");
+    });
+
+    fileContainer.addEventListener("dragleave", (event) => {
+      event.preventDefault();
+      event.target.classList.remove("drag-over");
+    });
+
+    window.handleRegularFileSelection = function (event) {
+      handleFileSelection(event.target.files);
+    };
+
+    function handleFileSelection(files) {
+      const filesArray = Array.from(files);
+      const placeholder = fileContainer.querySelector(
+        ".files-container-placeholder"
+      );
+      if (placeholder) placeholder.remove();
+
+      filesArray.forEach((file) => {
+        const fileViewer = document.createElement("div");
+        const widgetsViewer = document.createElement("div");
+        const buttonsViewer = document.createElement("div");
+
+        fileViewer.classList.add("image-viewer");
+        widgetsViewer.classList.add("widgets-viewer");
+        buttonsViewer.classList.add("buttons-viewer");
+
+        const fileName = document.createElement("span");
+        fileName.classList.add("filename");
+        fileName.textContent = file.name;
+
+        const progressBar = document.createElement("div");
+        progressBar.classList.add("progress-bar");
+        const progressBarInner = document.createElement("div");
+        progressBarInner.classList.add("progress-bar-inner");
+        progressBar.appendChild(progressBarInner);
+
+        const deleteButton = document.createElement("button");
+        deleteButton.classList.add("delete-btn");
+        deleteButton.innerHTML = `<i class="fa-solid fa-trash"></i> Delete`;
+        deleteButton.addEventListener("click", () => {
+          fileViewer.remove();
+        });
+
+        const uploadButton = document.createElement("button");
+        uploadButton.classList.add("upload-btn");
+        uploadButton.innerHTML = `<i class="fa-solid fa-upload"></i> Upload`;
+        uploadButton.addEventListener("click", () => {
+          uploadFile(fileViewer, file, progressBarInner);
+        });
+
+        fileViewer.appendChild(fileName);
+        widgetsViewer.appendChild(progressBar);
+        buttonsViewer.appendChild(deleteButton);
+        buttonsViewer.appendChild(uploadButton);
+        widgetsViewer.appendChild(buttonsViewer);
+        fileViewer.appendChild(widgetsViewer);
+        fileContainer.appendChild(fileViewer);
+      });
+    }
+
+    function uploadFile(fileViewer, file, progressBarInner) {
+      const formData = new FormData();
+      formData.append("module", moduleEl.value);
+      formData.append("file", file);
+      formData.append("csrfmiddlewaretoken", "{{ csrf_token }}");
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", "{% url 'upload' %}", true);
+      xhr.upload.onprogress = function (event) {
+        if (event.lengthComputable) {
+          const percentComplete = (event.loaded / event.total) * 100;
+          progressBarInner.style.width = percentComplete + "%";
+        }
+      };
+
+      xhr.onload = function () {
+        const response = JSON.parse(xhr.response);
+        if (xhr.status === 200) {
+          messagesContainer.innerHTML = `<div class="alert alert-info">${response.message}</div>`;
+          fileViewer.remove();
+        } else {
+          messagesContainer.innerHTML = `<div class="alert alert-danger">File upload failed</div>`;
+        }
+      };
+
+      xhr.send(formData);
+    }
+  });
+</script>
+{% endblock %}

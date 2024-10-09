@@ -1,0 +1,90 @@
+{%extends "hod_template.html"%} {%block content%}
+<script>
+  // Dropdown toggle
+
+  // Close dropdown if clicked outside
+  //   $(document).click(function (event) {
+  //     if (!$(event.target).closest(".dropdown-menu").length) {
+  //       $(".dropdown-menu").css("display", "none");
+  //     }
+  //   });
+
+  function openDropdown(dropdown) {
+    const dropdowns = document.getElementsByClassName("dropdown-menu");
+    for (let i = 0; i < dropdowns.length; i++) {
+      if (dropdowns[i].classList.contains(`dropdown-menu-${dropdown}`)) {
+        dropdowns[i].style.display = "block";
+      } else {
+        dropdowns[i].style.display = "none";
+      }
+    }
+  }
+</script>
+<style>
+  .program-list {
+    display: flex;
+  }
+  .program-item {
+    background-color: rgba(198, 188, 188, 0.299);
+    width: 300px;
+    padding: 0.7em;
+    color: black;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    margin: 0.2em;
+    cursor: pointer;
+    overflow: hidden;
+  }
+  .program-item:hover {
+    background-color: rgba(8, 0, 0, 0.523);
+    color: white;
+  }
+  .program-item button:hover {
+    background-color: rgba(255, 247, 247, 0.9);
+  }
+  .program-item button {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    border: none;
+  }
+</style>
+<h1>Programs</h1>
+<ul class="program-list">
+  {%for program in programs%}
+  <div class="dropdown">
+    <li class="program-item">
+      <span><i class="fa fa-folder"></i></span>
+      <span>{{program}} </span>
+
+      <button onclick="openDropdown({{forloop.counter}})">
+        <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+      </button>
+    </li>
+    <div
+      class="dropdown-menu dropdown-menu-right dropdown-menu-{{forloop.counter}}"
+      aria-labelledby="dropdownMenuButton"
+    >
+      <a
+        class="dropdown-item"
+        href="{%url 'year_modules' program_id=program.id year=1%}"
+        >Year 1</a
+      >
+      <a
+        class="dropdown-item"
+        href="{%url 'year_modules' program_id=program.id year=2%}"
+        >Year 2</a
+      >
+      <a
+        class="dropdown-item"
+        href="{%url 'year_modules' program_id=program.id year=3%}"
+        >Year 3</a
+      >
+    </div>
+  </div>
+
+  {%endfor%}
+</ul>
+
+{%endblock%}
