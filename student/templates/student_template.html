@@ -15,12 +15,14 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
     />
-    <!-- AdminLTE -->
+    <!-- AdminLTE CSS -->
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css"
     />
+    <!-- Custom CSS -->
     <style>
+      /* Theme Variables */
       [data-theme="light"] {
         --background-color: #ffffffb4;
         --background-secondary: #ffffff;
@@ -41,18 +43,12 @@
         --error-color: #bf0000;
         --success-color: #2a672aa1;
       }
+
+      /* Global Styles */
       body {
         font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
         background-color: var(--background-color);
         color: var(--primary-color);
-      }
-      .container {
-        max-width: 1200px;
-        margin: 50px auto;
-        padding: 20px;
-        background: var(--background-color);
       }
       h1 {
         color: var(--primary-color);
@@ -60,30 +56,7 @@
         font-size: 2em;
       }
 
-      .profile-dropdown {
-        position: relative;
-      }
-
-      .profile-dropdown-content {
-        display: none;
-        position: absolute;
-        right: 0;
-        top: 60px;
-        padding: 10px;
-        border-radius: 0px;
-        z-index: 100;
-        background-color: var(--background-color);
-        color: var(--primary-color);
-      }
-
-      .profile-dropdown.active .profile-dropdown-content {
-        display: block;
-      }
-
-      .dropdown-toggle::after {
-        display: none;
-      }
-
+      /* Custom Navbar Items */
       .avatar {
         width: 38px;
         height: 38px;
@@ -97,58 +70,25 @@
         margin-left: 10px;
       }
 
-      .navbar-nav .nav-link {
-        display: flex;
-        align-items: center;
-        position: relative;
-      }
-
-      .profile-dropdown-content a {
-        color: var(--interactive-color);
-        text-decoration: none;
-      }
-
-      .profile-dropdown-content a:hover {
-        color: var(--interactive-color-hover);
-      }
-      .main-sidebar {
+      /* Profile Dropdown Customization */
+      .dropdown-menu {
         background-color: var(--background-color);
         color: var(--primary-color);
       }
-      .navbar-nav {
-        background-color: var(--background-color);
-        color: var(--primary-color);
-      }
-      .brand-link {
+      .dropdown-item {
         color: var(--interactive-color);
       }
-      .brand-link:hover {
+      .dropdown-item:hover {
         color: var(--interactive-color-hover);
       }
-      .nav-item {
-        width: 100%;
-        display: grid;
-        grid-template-columns: auto auto;
-        padding: 0.1em;
-      }
-      .nav-item:hover {
-        background-color: var(--interactive-color-hover);
-      }
-      #toggle-color {
-        border: none;
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        color: var(--primary-color);
-        background-color: var(--interactive-color-hover);
-      }
-      .content-wrapper {
-        background-color: var(--background-color);
-      }
+
+      /* Toggle Switch Customization */
       .toggle-container {
         display: flex;
-        justify-content: center;
+        align-items: center;
+        margin-right: 15px;
       }
+
       .switch {
         position: relative;
         display: inline-block;
@@ -193,10 +133,8 @@
       input:checked + .slider:before {
         transform: translateX(26px);
       }
-      #sidebarToggleTop {
-        background-color: var(--interactive-color);
-        color: var(--primary-color);
-      }
+
+      /* Notification Styles */
       #notification-container {
         position: fixed;
         top: 70px;
@@ -225,10 +163,27 @@
         opacity: 0;
         transition: opacity 0.5s ease-in-out;
       }
+      footer {
+        background: #343a40;
+        color: #fff;
+        text-align: center;
+        padding: 15px 0;
+        margin-top: 40px;
+      }
     </style>
+    <!-- jQuery (if needed for custom scripts or AdminLTE) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Bootstrap Bundle JS (includes Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- AdminLTE JS -->
+    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+
+    <!-- Custom JS -->
     <script>
       $(document).ready(function () {
+        // Theme Toggle Functionality
         function calculateSettingAsThemeString({
           localStorageTheme,
           systemSettingDark,
@@ -243,8 +198,8 @@
             return "light";
           }
         }
-        const localStorageTheme = localStorage.getItem("theme");
 
+        const localStorageTheme = localStorage.getItem("theme");
         const systemSettingDark = window.matchMedia(
           "(prefers-color-scheme: dark)"
         );
@@ -253,183 +208,209 @@
           localStorageTheme,
           systemSettingDark,
         });
-        // target the button using the data attribute we added earlier
+
         const button = document.querySelector("#mode-toggle");
         document
           .querySelector("html")
           .setAttribute("data-theme", currentThemeSetting);
-        currentThemeSetting === "dark" ? button.checked : button.uncheck;
+        button.checked = currentThemeSetting === "dark";
 
-        button.addEventListener("click", () => {
-          const newTheme = currentThemeSetting === "dark" ? "light" : "dark";
-          // update the button text
-          const newCta = newTheme === "dark" ? "L" : "D";
-          button.innerText = newCta;
-
-          // use an aria-label if you are omitting text on the button
-          // and using sun/moon icons, for example
-          button.setAttribute("aria-label", newCta);
-
-          // update theme attribute on HTML to switch theme in CSS
+        button.addEventListener("change", () => {
+          const newTheme = button.checked ? "dark" : "light";
           document.querySelector("html").setAttribute("data-theme", newTheme);
-
-          // update in local storage
           localStorage.setItem("theme", newTheme);
-
-          // update the currentThemeSetting in memory
           currentThemeSetting = newTheme;
         });
 
-        // Check dark mode from cookie
-        function getCookie(name) {
-          var nameEQ = name + "=";
-          var ca = document.cookie.split(";");
-          for (var i = 0; i < ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0) == " ") c = c.substring(1, c.length);
-            if (c.indexOf(nameEQ) == 0)
-              return c.substring(nameEQ.length, c.length);
-          }
-          return null;
-        }
-        var mode = getCookie("mode");
-        if (mode === "dark") {
-          $("body").addClass("dark-mode");
-        }
+        // Initialize AdminLTE Sidebar
+        $("body").addClass("sidebar-mini");
 
-        // Dropdown toggle
-        $(".profile-dropdown .nav-link").click(function (event) {
-          event.preventDefault(); // Prevent the default action
-          $(".profile-dropdown").toggleClass("active"); // Toggle active class
-        });
+        // WebSocket for Notifications
+        const socket = new WebSocket(
+          `ws://${window.location.hostname}:8000/message`
+        );
 
-        // Close dropdown if clicked outside
-        $(document).click(function (event) {
-          if (!$(event.target).closest(".profile-dropdown").length) {
-            $(".profile-dropdown").removeClass("active"); // Close the dropdown
-          }
-        });
-        $("#sidebarToggleTop").click(function (event) {
-          if ($(".main-sidebar").css("display") == "block") {
-            $(".main-sidebar").css("display", "none");
-          } else {
-            $(".main-sidebar").css("display", "block");
-          }
+        socket.addEventListener("message", (event) => {
+          const notificationContainer = document.getElementById(
+            "notification-container"
+          );
+
+          const notification = document.createElement("div");
+          notification.className = "notification";
+          notification.textContent = event.data;
+
+          notificationContainer.appendChild(notification);
+
+          setTimeout(() => {
+            notification.classList.add("show");
+          }, 100);
+
+          setTimeout(() => {
+            notification.classList.remove("show");
+            notification.classList.add("hide");
+
+            setTimeout(() => {
+              notificationContainer.removeChild(notification);
+            }, 500);
+          }, 5000);
         });
       });
     </script>
   </head>
-  <body>
+  <body class="hold-transition sidebar-mini">
     <div id="notification-container"></div>
     <div class="wrapper">
       <!-- Navbar -->
-      <nav class="main-header navbar navbar-expand">
-        <button id="sidebarToggleTop" class="btn mr-3">
-          <i class="fa fa-bars"></i>
-        </button>
-        <div>
-          <h4>Welcome, {{ user.username }}!</h4>
-        </div>
-        <ul class="navbar-nav ml-auto">
-          <div class="toggle-container">
-            <label class="switch">
-              <input type="checkbox" id="mode-toggle" />
-              <span class="slider round"></span>
-            </label>
-          </div>
-          <li class="nav-item profile-dropdown">
+      <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+        <!-- Left navbar links -->
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              data-widget="pushmenu"
+              href="#"
+              role="button"
+              aria-label="Toggle Sidebar"
+            >
+              <i class="fas fa-bars"></i>
+            </a>
+          </li>
+          <li class="nav-item d-none d-sm-inline-block">
+            <h4>Welcome, {{ user.username }}!</h4>
+          </li>
+        </ul>
+
+        <!-- Right navbar links -->
+        <ul class="navbar-nav ms-auto">
+          <!-- Theme Toggle Switch -->
+          <li class="nav-item">
+            <div class="toggle-container">
+              <label class="switch">
+                <input type="checkbox" id="mode-toggle" />
+                <span class="slider round"></span>
+              </label>
+            </div>
+          </li>
+
+          <!-- Profile Dropdown -->
+          <li class="nav-item dropdown">
             <a
               class="nav-link dropdown-toggle"
               href="#"
               id="userDropdown"
               role="button"
-              aria-haspopup="true"
+              data-bs-toggle="dropdown"
               aria-expanded="false"
             >
               <div class="avatar">{{ user.username|slice:":2"|upper }}</div>
             </a>
-            <!-- Dropdown - User Information -->
-            <div class="profile-dropdown-content">
-              <a class="dropdown-item" href="{% url 'student_profile' %}">
-                <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                Profile
-              </a>
-              <div class="dropdown-divider"></div>
-              <a
-                class="dropdown-item"
-                href="{% url 'logout' %}"
-                data-toggle="modal"
-                data-target="#logoutModal"
-              >
-                <i
-                  class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"
-                ></i>
-                Logout
-              </a>
-            </div>
+            <ul
+              class="dropdown-menu dropdown-menu-end"
+              aria-labelledby="userDropdown"
+            >
+              <li>
+                <a class="dropdown-item" href="{% url 'student_profile' %}">
+                  <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                  Profile
+                </a>
+              </li>
+              <li>
+                <hr class="dropdown-divider" />
+              </li>
+              <li>
+                <a
+                  class="dropdown-item"
+                  href="#"
+                  data-bs-toggle="modal"
+                  data-bs-target="#logoutModal"
+                >
+                  <i
+                    class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"
+                  ></i>
+                  Logout
+                </a>
+              </li>
+            </ul>
           </li>
         </ul>
       </nav>
       <!-- /.navbar -->
 
       <!-- Main Sidebar Container -->
-      <aside class="main-sidebar elevation-4">
+      <aside class="main-sidebar sidebar-dark-primary elevation-4">
+        <!-- Brand Logo -->
         <a href="#" class="brand-link">
-          <span class="brand-text">Student Dashboard</span>
+          <span class="brand-text font-weight-light">Student Dashboard</span>
         </a>
+
+        <!-- Sidebar -->
         <div class="sidebar">
           <!-- Sidebar Menu -->
           <nav class="mt-2">
-            <ul class="navbar-nav" id="accordionSidebar">
+            <ul
+              class="nav nav-pills nav-sidebar flex-column"
+              data-widget="treeview"
+              role="menu"
+              data-accordion="false"
+            >
               <li class="nav-item">
-                <a
-                  href="{% url 'student_dashboard' %}"
-                  class="nav-link collapsed"
-                >
-                  <i class="fas fa-fw fa-chart-simple"></i>&nbsp;&nbsp;
-                  <span>Dashboard</span>
+                <a href="{% url 'student_dashboard' %}" class="nav-link">
+                  <i class="nav-icon fas fa-chart-simple"></i>
+                  <p>Dashboard</p>
                 </a>
               </li>
 
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'upload' %}">
-                  <i class="nav-icon fas fa-upload"></i>&nbsp;&nbsp;
-                  <span>Upload Document</span>
+                <a href="{% url 'upload' %}" class="nav-link">
+                  <i class="nav-icon fas fa-upload"></i>
+                  <p>Upload Document</p>
+                </a>
+              </li>
+
+              <li class="nav-item">
+                <a href="{% url 'student_documents' %}" class="nav-link">
+                  <i class="nav-icon fas fa-file-alt"></i>
+                  <p>My Documents</p>
+                </a>
+              </li>
+
+              <li class="nav-item">
+                <a href="{% url 'student_messages' %}" class="nav-link">
+                  <i class="nav-icon fas fa-envelope"></i>
+                  <p>Messages</p>
                 </a>
               </li>
 
               <li class="nav-item">
                 <a
+                  href="#"
                   class="nav-link"
-                  href="{% url 'student_documents' %}"
-                  id="upload-popup-btn"
-                  data-target="document-list"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#collapseSettings"
+                  aria-expanded="false"
+                  aria-controls="collapseSettings"
                 >
-                  <i class="nav-icon fas fa-file-alt"></i>&nbsp;&nbsp;
-                  <span>My Document</span>
+                  <i class="nav-icon fas fa-cog"></i>
+                  <p>
+                    Settings
+                    <i class="right fas fa-angle-left"></i>
+                  </p>
                 </a>
-              </li>
-              <li class="nav-item">
-                <a
-                  href="{% url 'student_messages' %}"
-                  class="nav-link collapsed"
+                <div
+                  class="collapse"
+                  id="collapseSettings"
+                  data-bs-parent="#accordionSidebar"
                 >
-                  <i class="fas fa-fw fa-envelope"></i>&nbsp;&nbsp;
-                  <span>Messages</span>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a
-                  class="nav-link"
-                  href="{% url 'student_settings' %}"
-                  data-toggle="collapse"
-                  data-target="#collapsePages1"
-                  aria-expanded="true"
-                  aria-controls="collapsePages1"
-                >
-                  <i class="nav-icon fas fa-cog"></i>&nbsp;&nbsp;
-                  <span>Settings</span>
-                </a>
+                  <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                      <a href="{% url 'student_settings' %}" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Account Settings</p>
+                      </a>
+                    </li>
+                    <!-- Add more sub-items here if needed -->
+                  </ul>
+                </div>
               </li>
             </ul>
           </nav>
@@ -438,57 +419,56 @@
         <!-- /.sidebar -->
       </aside>
 
-      <!-- Content Wrapper -->
-      <div class="content-wrapper">{% block content %} {% endblock %}</div>
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <!-- Main content -->
+        <section class="content">
+          <div class="container-fluid">{% block content %} {% endblock %}</div>
+        </section>
+        <!-- /.content -->
+      </div>
+      <footer>
+        <div class="container">
+          <p>&copy; 2024 Digital Document Holder. All rights reserved.</p>
+        </div>
+      </footer>
+      <!-- /.content-wrapper -->
     </div>
 
-    <!-- Bootstrap and AdminLTE scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
-    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
-    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-    <script>
-      // Manage messaging with websocket
-      // Create WebSocket connection.
-      const socket = new WebSocket(
-        `ws://${window.location.hostname}:8000/message`
-      );
+    <!-- ./wrapper -->
 
-      // Connection opened
-      // socket.addEventListener("open", (event) => {
-      //   socket.send(JSON.stringify("Hello Server!"));
-      // });
-
-      // Listen for messages
-      socket.addEventListener("message", (event) => {
-        const notificationContainer = document.getElementById(
-          "notification-container"
-        );
-
-        // Create notification element
-        const notification = document.createElement("div");
-        notification.className = "notification";
-        notification.textContent = event.data;
-
-        // Append notification to the container
-        notificationContainer.appendChild(notification);
-
-        // Show notification with fade-in effect
-        setTimeout(() => {
-          notification.classList.add("show");
-        }, 100);
-
-        // Hide notification after the specified duration
-        setTimeout(() => {
-          notification.classList.remove("show");
-          notification.classList.add("hide");
-
-          // Remove the notification from DOM after it disappears
-          setTimeout(() => {
-            notificationContainer.removeChild(notification);
-          }, 500); // Match this with your CSS transition time
-        }, 5000);
-      });
-    </script>
+    <!-- Logout Modal -->
+    <div
+      class="modal fade"
+      id="logoutModal"
+      tabindex="-1"
+      aria-labelledby="logoutModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="logoutModalLabel">Logout</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">Are you sure you want to logout?</div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <a href="{% url 'logout' %}" class="btn btn-primary">Logout</a>
+          </div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
